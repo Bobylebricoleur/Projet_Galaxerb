@@ -39,6 +39,9 @@ res_conso:
 	done
 	@echo "\n✅ Toutes les mesures sont terminées !"
 
+Trace_courbes : 
+	python3 test.py
+
 
 clean:
 	$(MAKE) -C cpp clean

@@ -6,13 +6,15 @@ from pathlib import Path
 from io import StringIO
 
 # ===================== À ADAPTER PAR TOI =====================
-fichier_cpp    = "/home/rose/Documents/Projet_Galaxerb/cpp-naif-cli/resultats.txt"
-fichier_java   = "/home/rose/Documents/Projet_Galaxerb/java_naif_cli/resultats.txt"
-fichier_python = "/home/rose/Documents/Projet_Galaxerb/python-naif-cli/resultats.txt"
+fichier_cpp      = "/home/rose/Documents/Projet_Galaxerb/cpp-naif-cli/resultats.txt"
+fichier_java     = "/home/rose/Documents/Projet_Galaxerb/java_naif_cli/resultats.txt"
+fichier_java_jit = "/home/rose/Documents/Projet_Galaxerb/java_naif_cli/resultatsJit.txt"
+fichier_python   = "/home/rose/Documents/Projet_Galaxerb/python-naif-cli/resultats.txt"
+fichier_julia    = "/home/rose/Documents/Projet_Galaxerb/julia-naif-cli/resultats.txt"
 
-labels  = ["C++", "Java", "Python"]      # légende
-periode = 0.5                             # secondes entre deux mesures
-prefix  = "comparaison_"                  # préfixe des fichiers de sortie
+labels  = ["C++", "Java","JavaJit","Julia", "Python"] # légende
+periode = 0.5                                         # secondes entre deux mesures
+prefix  = "comparaison_"                              # préfixe des fichiers de sortie
 # =============================================================
 
 
@@ -88,13 +90,16 @@ def calculer_moyennes(df: pd.DataFrame):
     return freq_moy, temp_moy, puiss_moy
 
 
-def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = ""):
-    # 1) Température
+def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = "", periode_s: float = 0.5):
     burn_in_seconds = 10
+    idx_start = int(burn_in_seconds / periode_s)
+
+    # 1) Température
     plt.figure()
     for t, d, lab in zip(temps_list, dfs, labels):
-        t__cut = t[ int(burn_in_seconds / periode) : ]
-        plt.plot(t__cut, d["PkgTmp"], label=lab, linewidth=1.6)
+        t_cut = t[idx_start:]
+        d_cut = d.iloc[idx_start:]          # <--- IMPORTANT
+        plt.plot(t_cut, d_cut["PkgTmp"], label=lab, linewidth=1.6)
     plt.title("Comparaison de la température CPU")
     plt.xlabel("Temps (s)")
     plt.ylabel("Température (°C)")
@@ -106,8 +111,9 @@ def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = ""):
     # 2) Puissance
     plt.figure()
     for t, d, lab in zip(temps_list, dfs, labels):
-        t__cut = t[ int(burn_in_seconds / periode) : ]
-        plt.plot(t__cut, d["PkgWatt"], label=lab, linewidth=1.6)
+        t_cut = t[idx_start:]
+        d_cut = d.iloc[idx_start:]
+        plt.plot(t_cut, d_cut["PkgWatt"], label=lab, linewidth=1.6)
     plt.title("Comparaison de la puissance CPU")
     plt.xlabel("Temps (s)")
     plt.ylabel("Puissance (W)")
@@ -119,8 +125,9 @@ def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = ""):
     # 3) Fréquence
     plt.figure()
     for t, d, lab in zip(temps_list, dfs, labels):
-        t__cut = t[ int(burn_in_seconds / periode) : ]
-        plt.plot(t__cut, d["Avg_MHz"], label=lab, linewidth=1.6)
+        t_cut = t[idx_start:]
+        d_cut = d.iloc[idx_start:]
+        plt.plot(t_cut, d_cut["Avg_MHz"], label=lab, linewidth=1.6)
     plt.title("Comparaison de la fréquence CPU")
     plt.xlabel("Temps (s)")
     plt.ylabel("Fréquence (MHz)")
@@ -132,12 +139,13 @@ def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = ""):
     plt.show()
 
 
+
 def main():
-    fichiers = [Path(fichier_cpp), Path(fichier_java), Path(fichier_python)]
+    fichiers = [Path(fichier_cpp), Path(fichier_java),Path(fichier_java_jit),Path(fichier_julia), Path(fichier_python)]
     dfs = []
     temps_list = []
 
-    # Lecture robuste des 3 fichiers
+    # Lecture robuste des 5 fichiers
     for f in fichiers:
         df = lire_donnees_robuste(f)
         dfs.append(df)
@@ -162,7 +170,8 @@ def main():
     print(f"\nRésumé exporté dans : {prefix}resume_moyennes.csv")
 
     # Graphes superposés
-    tracer_graphes_superposes(temps_list, dfs, labels, prefix=prefix)
+    tracer_graphes_superposes(temps_list, dfs, labels, prefix=prefix, periode_s=periode)
+
 
 
 if __name__ == "__main__":
