@@ -84,7 +84,7 @@ int main( int argc, char ** argv )
         cpt = nb_iterations;
         end_ref = std::chrono::steady_clock::now();
     } else if (is_temporel) {
-        start_ref = std::chrono::steady_clock::now();
+        //start_ref = std::chrono::steady_clock::now();
         cpt = 0;
         temps = 0.0;
         while (temps <= temps_traitements) {
