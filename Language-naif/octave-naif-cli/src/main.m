@@ -1,75 +1,122 @@
-function main(args)
-    g = load_from_file(infile, 1);
-    else
-    g = CreateGalaxy(nbParticules);
+% Ajouter le répertoire contenant vos fonctions au path
+addpath(fileparts(mfilename('load_from_file.m')));
+addpath(fileparts(mfilename('load_from_file.m')));
+
+function main()
+    % Gestion des arguments
+    arg_list = argv();
+    nb_iterations = -1;
+    temps_traitements = -1.0;
+    nbParticules = -1;
+    is_iteratif = false;
+    is_temporel = false;
+    
+    % Parse arguments
+    %nbParticules  = str2num(arg_list{2});
+    %nb_iterations = str2num(arg_list{1});
+    nbParticules  = 512;
+    nb_iterations = 10;
+    is_iteratif = true;
+    % i = 1;
+    %while i <= length(arg_list)
+    %    if strcmp(arg_list{i}, '-i')
+    %        nb_iterations = str2num(arg_list{i+1});
+    %        is_iteratif = true;
+    %        i = i + 2;
+    %    elseif strcmp(arg_list{i}, '-t')
+    %        temps_traitements = str2num(arg_list{i+1});
+    %        is_temporel = true;
+    %        i = i + 2;
+    %    elseif strcmp(arg_list{i}, '-n')
+    %        nbParticules = str2num(arg_list{i+1});
+    %        i = i + 2;
+    %    else
+    %        i = i + 1;
+    %    end
+    %end */
+    %
+    if nbParticules <= 0 || (!is_iteratif && !is_temporel)
+        fprintf('Usage: octave main.m -i <nb_iterations> -n <nb_particules> | -t <temps> -n <nb_particules>\n');
+        return;
     end
     
+    filename = "../../../data/dubinski_colored.tab";
     
-    # Boucle de simulation
+    fprintf('(II) Début du chargement de la constellation\n');
+    galaxie = load_from_file(filename, nbParticules);
+    fprintf('(II) Fin du chargement de la constellation\n');
+    disp(galaxie.size)
+    cpt = 0;
+    temps = 0.0;
+    start_ref = tic;
+    disp(galaxie.size)
+    fprintf('Je suis ICI\n');
+    disp(galaxie.size)
     if is_iteratif
-    start_ref = tic();
-    for k = 1:nb_iterations
-    g = render_naive_execute(g);
+        
+        for iter = 1:nb_iterations
+            start = tic;
+            galaxie = RenderNaive(galaxie);
+            execTime = toc(start);
+            fprintf('ExecTime = %.6f sec.\n', execTime);
+        end
+        cpt = nb_iterations;
+        temps_tot = toc(start_ref);
+
+    elseif is_temporel
+        cpt = 0;
+        temps = 0.0;
+        while temps <= temps_traitements
+            start = tic;
+            cpt = cpt + 1;
+            galaxie = RenderNaive(galaxie);
+            execTime = toc(start);
+            temps = temps + execTime;
+            fprintf('Exécution n° %d ExecTime = %.6f sec.\n', cpt, execTime);
+        end
+        temps_tot = toc(start_ref);
     end
-    end_ref = toc(start_ref);
-    else
-    cpt = 0; temps = 0.0;
-    while temps <= temps_traitements
-    t0 = tic();
-    cpt = cpt + 1;
-    g = render_naive_execute(g);
-    execTime = toc(t0);
-    temps = temps + execTime;
-    printf('Exécution n° %d ExecTime = %.6f sec.\n', cpt, execTime);
-    end
-    nb_iterations = cpt;
-    end_ref = temps; # total mesuré
+    
+    if galaxie.size == 0
+        fprintf('(EE) Error the galaxy has no particle (g.size == %d)\n', galaxie.size);
+        return;
     end
     
+    % Calcul des caractéristiques
+    total_mass = sum(galaxie.mass);
+    sum_pos_x = sum(galaxie.mass .* galaxie.pos_x);
+    sum_pos_y = sum(galaxie.mass .* galaxie.pos_y);
+    sum_pos_z = sum(galaxie.mass .* galaxie.pos_z);
     
-    # Caractéristiques (comme le C++)
-    total_mass = sum(double(g.mass));
-    center_x = sum(double(g.mass).*double(g.pos_x)) / total_mass;
-    center_y = sum(double(g.mass).*double(g.pos_y)) / total_mass;
-    center_z = sum(double(g.mass).*double(g.pos_z)) / total_mass;
-    mean_mass = total_mass / double(g.size);
+    sum_vel_x = sum(galaxie.vel_x);
+    sum_vel_y = sum(galaxie.vel_y);
+    sum_vel_z = sum(galaxie.vel_z);
     
+    mean_mass = total_mass / galaxie.size;
+    center_x = sum_pos_x / total_mass;
+    center_y = sum_pos_y / total_mass;
+    center_z = sum_pos_z / total_mass;
     
-    mean_vel_x = mean(double(g.vel_x));
-    mean_vel_y = mean(double(g.vel_y));
-    mean_vel_z = mean(double(g.vel_z));
+    mean_vel_x = sum_vel_x / galaxie.size;
+    mean_vel_y = sum_vel_y / galaxie.size;
+    mean_vel_z = sum_vel_z / galaxie.size;
     
+    tmps_mean = temps_tot / nb_iterations;
     
-    tmps_tot = end_ref; # secondes
-    tmps_mean = tmps_tot / nb_iterations;
+    fprintf('=========================== caractéristique de la galaxie ===========================\n');
+    fprintf('Nombre de particules : %d\n', galaxie.size);
+    fprintf('Masse totale         : %.3e\n', total_mass);
+    fprintf('Masse moyenne        : %.3e\n', mean_mass);
+    fprintf('Centre de masse      : (%.3e, %.3e, %.3e)\n', center_x, center_y, center_z);
+    fprintf('Vitesse moyenne      : (%.3e, %.3e, %.3e)\n', mean_vel_x, mean_vel_y, mean_vel_z);
+    fprintf('=========================== ============================== ===========================\n');
+    fprintf('=========================== Calculs temporels ===========================\n');
+    fprintf('Temps moyen par itération : %.6f sec.\n', tmps_mean);
+    fprintf('Temps total pour %d itérations : %.6f sec.\n', nb_iterations, temps_tot);
+    fprintf('=========================== ============================== ===========================\n');
     
-    
-    printf('=========================== Caractéristiques ===========================\n');
-    printf('Nombre de particules : %d\n', g.size);
-    printf('Masse totale : %.6e\n', total_mass);
-    printf('Masse moyenne : %.6e\n', mean_mass);
-    printf('Centre de masse : (%.6e, %.6e, %.6e)\n', center_x, center_y, center_z);
-    printf('Vitesse moyenne : (%.6e, %.6e, %.6e)\n', mean_vel_x, mean_vel_y, mean_vel_z);
-    printf('=========================== Calculs temporels ===========================\n');
-    printf('Temps moyen par itération : %.6f sec.\n', tmps_mean);
-    printf('Temps total pour %d itérations : %.6f sec.\n', nb_iterations, tmps_tot);
-    
-    
-    # Sauvegardes (comme C++)
-    save_to_file(g, 'particules.out', 'tab');
-    if ~exist('results','dir'), mkdir('results'); end
-    out = fullfile('results','octave_results.csv');
-    append_header = ~exist(out,'file');
-    fid = fopen(out,'a');
-    if fid < 0, error('Cannot open results file for append'); end
-    if append_header
-    fprintf(fid,'lang,mode,nb_particules,total_mass,mean_mass,center_x,center_y,center_z,mean_vel_x,mean_vel_y,mean_vel_z,tmps_mean,tmps_total,caracteristiques,calculs_temporels\n');
-    end
-    if is_iteratif, mode = 'iteration'; else, mode = 'temporel'; end
-    carac = sprintf('Nombre de particules : %d; Masse totale : %.6e; Masse moyenne : %.6e; Centre de masse : (%.6e, %.6e, %.6e); Vitesse moyenne : (%.6e, %.6e, %.6e)',...
-    g.size,total_mass,mean_mass,center_x,center_y,center_z,mean_vel_x,mean_vel_y,mean_vel_z);
-    temp = sprintf('Temps moyen par itération : %.6f sec.; Temps total : %.6f sec.', tmps_mean, tmps_tot);
-    fprintf(fid,'octave,%s,%d,%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%.8f,%.8f,"%s","%s"\n',...
-    mode, g.size, total_mass, mean_mass, center_x, center_y, center_z, mean_vel_x, mean_vel_y, mean_vel_z, tmps_mean, tmps_tot, carac, temp);
-    fclose(fid);
-    end
+    save_to_file(galaxie, 'particules.out', 'tab');
+end
+
+
+

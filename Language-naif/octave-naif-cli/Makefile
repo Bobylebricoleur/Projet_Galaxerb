@@ -1,4 +1,5 @@
-PYTHON=python3
+
+OCTAVE = octave --no-gui 
 
 # Durée max d'exécution en secondes
 DUREE = 120
@@ -9,30 +10,32 @@ INTERVALLE = 0.5
 # Nom du fichier de sortie
 SORTIE = resultats.txt
 
-# Commande turbostat (avec sudo)
 TURBOSTAT = sudo timeout $(DUREE) turbostat --Summary --quiet --show Busy%,Avg_MHz,PkgTmp,PkgWatt --interval $(INTERVALLE) > $(SORTIE)
 
-all: Experimantal
+all: Experimental
 
 build:
-	@echo "No build needed for Python"
+	@echo "No build needed for Octave"
 
-Diff: 
-#$(PYTHON) \src/main.py -i 1 -n 16
+Diff:
+	$(OCTAVE) src/main.m 10 16
 	echo "debut de diff"
 	diff particules.out ../../golden_model/particules.out
 	echo "fin de diff"
 
-Experimantal: 
-	echo "> Lancement des mesures Experimantal..."
-	$(PYTHON) \src/main.py -t 120 -n 16
-	echo "> Fin des mesures Experimantal..."
+# J'ai corrigé la typo 'Experimantal' en 'Experimental'
+Experimental:
+	echo "> Lancement des mesures Experimental..."
+#$(OCTAVE) src/main.m 
+	$(OCTAVE) --eval "source('src/main.m'); main_nbody(120, 16);"
+	echo "> Fin des mesures Experimental..."
 
 res_conso:
+	# Lance le calcul en arrière-plan (&) et turbostat en avant-plan
 	make all & $(TURBOSTAT)
 
 clean:
-	rm -f *.pyc __pycache__/*
+	rm -f octave-workspace
 	rm -rf build/*
 	rm -rf *.out
 	rm -rf *.txt

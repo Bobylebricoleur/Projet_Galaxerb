@@ -21,7 +21,7 @@ TURBOSTATJIT = sudo timeout $(DUREE) turbostat --Summary --quiet --show Busy%,Av
 
 .PHONY: all build run test clean
 
-all: run
+all: Experimantal
 
 build:
 	javac -d build src/*.java
@@ -49,12 +49,12 @@ Diff:
 #Sur Pc rose
 res_conso:
 	@echo "⚙️  Lancement de la mesure CPU (durée : $(DUREE)s, intervalle : $(INTERVALLE)s)..."
-	make all & $(TURBOSTAT)
+	make Experimantal & $(TURBOSTAT)
 	@echo "✅ Mesures terminées. Résultats enregistrés dans $(SORTIE)"
 
 res_consoJit:
 	@echo "⚙️  Lancement de la mesure CPU (durée : $(DUREE)s, intervalle : $(INTERVALLE)s)..."
-	make run_jit & $(TURBOSTATJIT)
+	make Experimantal_jit & $(TURBOSTATJIT)
 	@echo "✅ Mesures terminées. Résultats enregistrés dans $(SORTIEJIT)"
 
 clean:

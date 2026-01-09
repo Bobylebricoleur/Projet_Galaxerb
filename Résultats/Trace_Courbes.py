@@ -6,13 +6,13 @@ from pathlib import Path
 from io import StringIO
 
 # ===================== À ADAPTER PAR TOI =====================
-fichier_cpp      = "cpp-naif-cli/resultats.txt"
-fichier_java     = "java-naif-cli/resultats.txt"
-fichier_java_jit = "java-naif-cli/resultatsJit.txt"
-fichier_python   = "python-naif-cli/resultats.txt"
-# fichier_julia    = "cpp-naif-cli/resultats.txt"
+fichier_cpp      = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/cpp-naif-cli/resultats.txt"
+fichier_java     = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/java-naif-cli/resultats.txt"
+fichier_java_jit = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/java-naif-cli/resultatsJit.txt"
+fichier_python   = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/python-naif-cli/resultats.txt"
+fichier_julia    = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/cpp-naif-cli/resultats.txt"
 
-labels  = ["C++", "Java","JavaJit", "Python"] # légende
+labels  = ["C++", "Java","JavaJit", "Python","Julia"] # légende
 periode = 0.5                                         # secondes entre deux mesures
 prefix  = "comparaison_"                              # préfixe des fichiers de sortie
 # =============================================================
@@ -141,7 +141,7 @@ def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = "", periode
 
 
 def main():
-    fichiers = [Path(fichier_cpp), Path(fichier_java),Path(fichier_java_jit), Path(fichier_python)]
+    fichiers = [Path(fichier_cpp), Path(fichier_java),Path(fichier_java_jit), Path(fichier_python),Path(fichier_julia)]
     dfs = []
     temps_list = []
 
@@ -170,7 +170,7 @@ def main():
     print(f"\nRésumé exporté dans : {prefix}resume_moyennes.csv")
 
     # Graphes superposés
-    tracer_graphes_superposes(temps_list, dfs, labels, prefix=prefix, periode_s=periode)
+    # tracer_graphes_superposes(temps_list, dfs, labels, prefix=prefix, periode_s=periode)
 
 
 

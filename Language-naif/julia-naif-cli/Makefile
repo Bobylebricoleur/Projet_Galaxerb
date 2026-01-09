@@ -18,19 +18,17 @@ TURBOSTAT = sudo timeout $(DUREE) turbostat --Summary --quiet --show Busy%,Avg_M
 .PHONY: all build run test clean particules.out
 
 
-all: run
+all: Experimantal
 
-build: $(TARGET)
-	$(TARGET): $(SRC) src/Project.toml 
+build: $(TARGET) 
 	@mkdir -p build
+	$(TARGET): $(SRC) src/Project.toml
 	@echo "> Instanciation & précompilation du projet Julia..."
 	@$(JULIA) --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 	@touch $(TARGET)
 
-Experimantal: build
+Experimantal:
 	@echo "> Lancement de l'execution..."
-	# Passer les arguments du script APRÈS le chemin du script pour ne pas les confondre
-	# avec les options de l'exécutable Julia (ex: -t pour threads).
 	@$(JULIA) $(JULIA_FLAGS) $(SCRIPT) -t $(DUREEMESURE) -n $(Nb_particules)
 
 Diff: 
