@@ -11,8 +11,10 @@ fichier_java     = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/java
 fichier_java_jit = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/java-naif-cli/resultatsJit.txt"
 fichier_python   = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/python-naif-cli/resultats.txt"
 fichier_julia    = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/cpp-naif-cli/resultats.txt"
+fichier_rust     = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/rust-naif-cli/resultats.txt"
+fichier_octave   = "/home/alexandre/Documents/Projet_Galaxerb/Language-naif/python-naif-cli/resultats.txt"
 
-labels  = ["C++", "Java","JavaJit", "Python","Julia"] # légende
+labels  = ["C++", "Java","JavaJit", "Python","Julia","Rust","Octave"] # légende
 periode = 0.5                                         # secondes entre deux mesures
 prefix  = "comparaison_"                              # préfixe des fichiers de sortie
 # =============================================================
@@ -141,7 +143,7 @@ def tracer_graphes_superposes(temps_list, dfs, labels, prefix: str = "", periode
 
 
 def main():
-    fichiers = [Path(fichier_cpp), Path(fichier_java),Path(fichier_java_jit), Path(fichier_python),Path(fichier_julia)]
+    fichiers = [Path(fichier_cpp), Path(fichier_java),Path(fichier_java_jit), Path(fichier_python),Path(fichier_julia),Path(fichier_rust),Path(fichier_octave)]
     dfs = []
     temps_list = []
 

@@ -12,7 +12,7 @@ nb_itération = 10
 Nb_particules = 16
 INTERVALLE = 0.5
 SORTIE = resultats.txt
-TURBOSTAT = sudo timeout $(DUREE) turbostat --Summary --quiet --show Busy%,Avg_MHz,PkgTmp,PkgWatt --interval $(INTERVALLE) > $(SORTIE)
+TURBOSTAT = sudo timeout $(DUREEMESURE) turbostat --Summary --quiet --show Busy%,Avg_MHz,PkgTmp,PkgWatt --interval $(INTERVALLE) > $(SORTIE)
 
 
 .PHONY: all build run test clean particules.out
