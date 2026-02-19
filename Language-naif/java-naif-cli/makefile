@@ -31,7 +31,8 @@ Experimantal_jit: build
 	java -cp build Main -t 120 -n 16
 
 Experimantal: build
-	java -Djava.compiler=NONE -cp build Main -t 120 -n 16
+	java -Xint -cp build Main -t 120 -n 16
+
 
 
 Diff_jit: 

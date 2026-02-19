@@ -1,48 +1,19 @@
 .PHONY: all cpp python clean results
 
-all: java cpp python  
-DIRS = cpp-naif-cli java_naif_cli python-naif-cli
-cpp:
-	$(MAKE) -C cpp-naif-cli run mode=$(mode) n=$(n) t=$(t)
-
-python:
-	$(MAKE) -C python-naif-cli run mode=$(mode) n=$(n) t=$(t)
-
-java:
-	$(MAKE) -C java_naif_cli run mode=$(mode) n=$(n) t=$(t)
-
-rust:
-	cargo build --manifest-path rust-naif-cli/Cargo.toml --release
-
-results:
-	@echo "Fusion des résultats..."
-	@head -n 1 results/cpp_results.csv > results/combined.csv
-	@tail -n +2 results/cpp_results.csv >> results/combined.csv
-	@tail -n +2 results/python_results.csv >> results/combined.csv
-
-test:
-	$(MAKE) -C java_naif_cli test
-	$(MAKE) -C cpp-naif-cli test
-	$(MAKE) -C python-naif-cli test
-	# Ajoutez ici les tests Rust si besoin
-
-diff : 
-	$(MAKE) -C cpp-naif-cli test
-	$(MAKE) -C java_naif_cli test
-
-res_conso:
-
-	@echo "🚀 Lancement des mesures CPU pour tous les langages..."
-	@for dir in $(DIRS); do \
-		echo "\n📂 Traitement de $$dir ..."; \
-		$(MAKE) -C $$dir res_conso || exit 1; \
-	done
-	@echo "\n✅ Toutes les mesures sont terminées !"
 
 Trace_courbes : 
-	python3 test.py
+	python3 Trace_courbes.py
 
 
 clean:
-	$(MAKE) -C cpp clean
-	rm -f results/*.csv
+	$(MAKE) -C Language-naif/cpp-naif-cli clean
+	$(MAKE) -C Language-naif/java-naif-cli clean
+	$(MAKE) -C Language-naif/julia-naif-cli clean
+	$(MAKE) -C Language-naif/octave-naif-cli clean
+	$(MAKE) -C Language-naif/python-naif-cli clean
+	$(MAKE) -C Language-naif/rust-naif-cli clean
+	$(MAKE) -C Language-opti/cpp-opti clean
+	$(MAKE) -C Language-opti/cpp-opti2 clean
+	$(MAKE) -C Language-opti/cpp-opti3 clean
+	rm -f Resultats/*
+	@echo " Nettoyage complété !"

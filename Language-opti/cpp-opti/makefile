@@ -18,35 +18,29 @@ TURBOSTAT = sudo timeout $(DUREE) turbostat --Summary --quiet --show Busy%,Avg_M
 
 .PHONY: all build run test clean
 
-all: run
+all: Experimantal
 
 build:
 	@mkdir -p build
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
 	
 
-run: build
-	@echo "> Lancement de l'execution..."
-#	@./build/main -i 10 -n 16 
+Experimantal: build
+	@echo "> Lancement de l'execution..." 
 	@./build/main -t 120 -n 16
 
-perf: build
-	@echo "> Lancement de l'execution..."
-#	@./build/main -i 10 -n 16 
-	@./build/main -t 120 -n 16
 
-particules.out: run
+particules.out: Experimantal
 	@echo "> Generation des particules..."
 
-test: particules.out
+Diff: 
+	./build/main -i 10 -n 16
 	echo "debut de diff"
-	diff particules.out ../golden_model/particules.out
+	diff particules.out ../../golden_model/particules.out
 	echo "fin de diff"
 
-Res: run
-	@echo "> Generation des particules..."
 
-
+#Sur Pc rose
 res_conso:
 	make all & $(TURBOSTAT)
 
@@ -54,3 +48,5 @@ res_conso:
 clean:
 	rm -rf build/*
 	rm -rf particules.out
+	rm -rf *.txt
+	rm -rf resultats/*

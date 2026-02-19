@@ -38,10 +38,10 @@
 //
 //
 //
-class RenderOptim1
+class RenderOptim
 {
 public:
-    RenderOptim1( Galaxy& g ) : galaxie( g )
+    RenderOptim( Galaxy& g ) : galaxie( g )
     {
         accel_x = new float[g.size];
         accel_y = new float[g.size];
@@ -51,15 +51,8 @@ public:
 
     void execute()
     {
-        bzero(accel_x, sizeof(float) * galaxie.size);
-        bzero(accel_y, sizeof(float) * galaxie.size);
-        bzero(accel_z, sizeof(float) * galaxie.size);
+ 
 
-        //
-        // On calcule les nouvelles positions de toutes les particules
-        //
-
-       
     for(int i = 0; i < galaxie.size; i += 1)
     {
         float pos_xi = galaxie.pos_x[i];
@@ -104,6 +97,7 @@ public:
         galaxie.pos_z[i] = galaxie.pos_z_new[i];
     }
 
+   
     }
 
     Galaxy* particules()
@@ -111,7 +105,7 @@ public:
         return &galaxie;
     }
 
-    ~RenderOptim1()
+    ~RenderOptim()
     {
         delete[] accel_x;
         delete[] accel_y;

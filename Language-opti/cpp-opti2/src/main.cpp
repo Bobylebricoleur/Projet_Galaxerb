@@ -61,7 +61,7 @@ int main( int argc, char ** argv )
         return 1;
     }
 
-    std::string filename = "../data/dubinski_colored.tab";
+    std::string filename = "../../data/dubinski_colored.tab";
 
     std::cout << "(II) Début du chargement de la constellation" << std::endl;
     Galaxy* galaxie = load_from_file( filename, nbParticules );

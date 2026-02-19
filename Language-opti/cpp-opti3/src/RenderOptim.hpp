@@ -29,6 +29,9 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 //
+ 
+#include <strings.h>
+#include <omp.h>
 //
 #include "Galaxy.hpp"
 //
@@ -38,11 +41,15 @@
 //
 //
 //
-class RenderOptim1
+
+
+class RenderOptim
 {
 public:
-    RenderOptim1( Galaxy& g ) : galaxie( g )
+    RenderOptim( Galaxy& g ) : galaxie( g )
     {
+        const int max_threads = omp_get_num_procs(); // no division by two there is no logical cores in ARM systems
+        omp_set_num_threads(max_threads);
         accel_x = new float[g.size];
         accel_y = new float[g.size];
         accel_z = new float[g.size];
@@ -51,15 +58,8 @@ public:
 
     void execute()
     {
-        bzero(accel_x, sizeof(float) * galaxie.size);
-        bzero(accel_y, sizeof(float) * galaxie.size);
-        bzero(accel_z, sizeof(float) * galaxie.size);
-
-        //
-        // On calcule les nouvelles positions de toutes les particules
-        //
-
-       
+ 
+    #pragma omp parallel for
     for(int i = 0; i < galaxie.size; i += 1)
     {
         float pos_xi = galaxie.pos_x[i];
@@ -96,7 +96,7 @@ public:
         galaxie.pos_z_new[i] = galaxie.pos_z[i] + (galaxie.vel_z[i] * dt);
     }
 
-
+    #pragma omp parallel for
     for(int i = 0; i < galaxie.size; i += 1)
     {
         galaxie.pos_x[i] = galaxie.pos_x_new[i];
@@ -104,6 +104,7 @@ public:
         galaxie.pos_z[i] = galaxie.pos_z_new[i];
     }
 
+   
     }
 
     Galaxy* particules()
@@ -111,7 +112,7 @@ public:
         return &galaxie;
     }
 
-    ~RenderOptim1()
+    ~RenderOptim()
     {
         delete[] accel_x;
         delete[] accel_y;

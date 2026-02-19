@@ -38,10 +38,10 @@
 //
 //
 //
-class RenderOptim1
+class RenderOptim
 {
 public:
-    RenderOptim1( Galaxy& g ) : galaxie( g )
+    RenderOptim( Galaxy& g ) : galaxie( g )
     {
         accel_x = new float[g.size];
         accel_y = new float[g.size];
@@ -108,7 +108,7 @@ public:
         return &galaxie;
     }
 
-    ~RenderOptim1()
+    ~RenderOptim()
     {
         delete[] accel_x;
         delete[] accel_y;
